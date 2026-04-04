@@ -124,10 +124,10 @@ fun TransactionSheet(
 @Composable
 private fun DetailRow(label: String, value: String) {
     TableRow {
-        TableCell {
+        TableCell(modifier = Modifier.weight(1f)) {
             Text(label, variant = TextVariant.Muted)
         }
-        TableCell {
+        TableCell(modifier = Modifier.weight(1f)) {
             Text(value, variant = TextVariant.P)
         }
     }

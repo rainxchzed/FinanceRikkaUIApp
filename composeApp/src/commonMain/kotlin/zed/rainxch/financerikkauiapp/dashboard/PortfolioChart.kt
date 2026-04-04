@@ -22,8 +22,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import zed.rainxch.rikkaui.components.ui.card.Card
-import zed.rainxch.rikkaui.components.ui.card.CardContent
-import zed.rainxch.rikkaui.components.ui.card.CardHeader
 import zed.rainxch.rikkaui.components.ui.tabs.Tab
 import zed.rainxch.rikkaui.components.ui.tabs.TabContent
 import zed.rainxch.rikkaui.components.ui.tabs.TabList
@@ -43,92 +41,83 @@ fun PortfolioChartSection(
     var selectedPeriod by remember { mutableStateOf(2) } // Default to 1M
 
     Card(modifier = modifier.fillMaxWidth()) {
-        CardHeader {
-            if (isCompact) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-                ) {
-                    Text(
-                        text = "Portfolio Performance",
-                        variant = TextVariant.H4,
+        // Header: title + period tabs
+        if (isCompact) {
+            Text(
+                text = "Portfolio Performance",
+                variant = TextVariant.H4,
+            )
+            TabList {
+                chartPeriods.forEachIndexed { index, period ->
+                    Tab(
+                        selected = selectedPeriod == index,
+                        onClick = { selectedPeriod = index },
+                        text = period,
                     )
-                    TabList {
-                        chartPeriods.forEachIndexed { index, period ->
-                            Tab(
-                                selected = selectedPeriod == index,
-                                onClick = { selectedPeriod = index },
-                                text = period,
-                            )
-                        }
-                    }
                 }
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Portfolio Performance",
-                        variant = TextVariant.H4,
-                        modifier = Modifier.weight(1f),
-                    )
-                    TabList {
-                        chartPeriods.forEachIndexed { index, period ->
-                            Tab(
-                                selected = selectedPeriod == index,
-                                onClick = { selectedPeriod = index },
-                                text = period,
-                            )
-                        }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Portfolio Performance",
+                    variant = TextVariant.H4,
+                    modifier = Modifier.weight(1f),
+                )
+                TabList {
+                    chartPeriods.forEachIndexed { index, period ->
+                        Tab(
+                            selected = selectedPeriod == index,
+                            onClick = { selectedPeriod = index },
+                            text = period,
+                        )
                     }
                 }
             }
         }
-        CardContent {
-            TabContent(selectedIndex = selectedPeriod) {
-                val data = FakeData.chartDataForPeriod(selectedPeriod)
 
-                // Y-axis labels + chart
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    // Chart with Y-axis hints
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        // Y-axis labels
-                        val maxVal = data.max()
-                        val minVal = data.min()
-                        Column(
-                            modifier = Modifier.height(200.dp).padding(end = RikkaTheme.spacing.sm),
-                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                        ) {
-                            Text("$${maxVal.toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
-                            Text("$${((maxVal + minVal) / 2).toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
-                            Text("$${minVal.toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
-                        }
+        // Chart content
+        TabContent(selectedIndex = selectedPeriod) {
+            val data = FakeData.chartDataForPeriod(selectedPeriod)
 
-                        // Chart canvas
-                        PortfolioChart(
-                            data = data,
-                            modifier = Modifier.weight(1f).height(200.dp),
-                        )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Y-axis labels + chart canvas
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    val maxVal = data.max()
+                    val minVal = data.min()
+                    Column(
+                        modifier = Modifier.height(200.dp).padding(end = RikkaTheme.spacing.sm),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text("$${maxVal.toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
+                        Text("$${((maxVal + minVal) / 2).toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
+                        Text("$${minVal.toInt()}", variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
                     }
 
-                    // X-axis labels
-                    Spacer(Modifier.height(RikkaTheme.spacing.xs))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 40.dp),
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                    ) {
-                        val labels = when (selectedPeriod) {
-                            0 -> listOf("9:30", "11:00", "12:30", "2:00", "4:00")
-                            1 -> listOf("Mon", "Tue", "Wed", "Thu", "Fri")
-                            2 -> listOf("Week 1", "Week 2", "Week 3", "Week 4")
-                            3 -> listOf("Apr", "May", "Jun")
-                            4 -> listOf("Jul", "Oct", "Jan", "Apr", "Jun")
-                            else -> emptyList()
-                        }
-                        labels.forEach { label ->
-                            Text(label, variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
-                        }
+                    PortfolioChart(
+                        data = data,
+                        modifier = Modifier.weight(1f).height(200.dp),
+                    )
+                }
+
+                // X-axis labels
+                Spacer(Modifier.height(RikkaTheme.spacing.xs))
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 40.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    val labels = when (selectedPeriod) {
+                        0 -> listOf("9:30", "11:00", "12:30", "2:00", "4:00")
+                        1 -> listOf("Mon", "Tue", "Wed", "Thu", "Fri")
+                        2 -> listOf("Week 1", "Week 2", "Week 3", "Week 4")
+                        3 -> listOf("Apr", "May", "Jun")
+                        4 -> listOf("Jul", "Oct", "Jan", "Apr", "Jun")
+                        else -> emptyList()
+                    }
+                    labels.forEach { label ->
+                        Text(label, variant = TextVariant.Small, color = RikkaTheme.colors.onMuted)
                     }
                 }
             }

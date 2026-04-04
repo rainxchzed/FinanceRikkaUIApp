@@ -15,8 +15,6 @@ import zed.rainxch.rikkaui.components.ui.avatar.AvatarSize
 import zed.rainxch.rikkaui.components.ui.badge.Badge
 import zed.rainxch.rikkaui.components.ui.badge.BadgeVariant
 import zed.rainxch.rikkaui.components.ui.card.Card
-import zed.rainxch.rikkaui.components.ui.card.CardContent
-import zed.rainxch.rikkaui.components.ui.card.CardHeader
 import zed.rainxch.rikkaui.components.ui.table.Table
 import zed.rainxch.rikkaui.components.ui.table.TableCell
 import zed.rainxch.rikkaui.components.ui.table.TableHeader
@@ -42,112 +40,108 @@ fun TransactionsTable(
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
-        CardHeader {
-            Text(
-                text = "Recent Transactions",
-                variant = TextVariant.H4,
-            )
-        }
-        CardContent {
-            Table(modifier = Modifier.fillMaxWidth()) {
-                TableHeader {
-                    TableCell(modifier = Modifier.weight(COL_ASSET)) {
-                        Text("Asset", variant = TextVariant.Muted)
-                    }
-                    TableCell(modifier = Modifier.weight(COL_TYPE)) {
-                        Text("Type", variant = TextVariant.Muted)
-                    }
-                    if (!isCompact) {
-                        TableCell(modifier = Modifier.weight(COL_QTY)) {
-                            Text("Quantity", variant = TextVariant.Muted)
-                        }
-                    }
-                    TableCell(modifier = Modifier.weight(COL_AMOUNT)) {
-                        Text("Amount", variant = TextVariant.Muted)
-                    }
-                    if (!isCompact) {
-                        TableCell(modifier = Modifier.weight(COL_DATE)) {
-                            Text("Date", variant = TextVariant.Muted)
-                        }
+        Text(
+            text = "Recent Transactions",
+            variant = TextVariant.H4,
+        )
+        Table(modifier = Modifier.fillMaxWidth()) {
+            TableHeader {
+                TableCell(modifier = Modifier.weight(COL_ASSET)) {
+                    Text("Asset", variant = TextVariant.Muted)
+                }
+                TableCell(modifier = Modifier.weight(COL_TYPE)) {
+                    Text("Type", variant = TextVariant.Muted)
+                }
+                if (!isCompact) {
+                    TableCell(modifier = Modifier.weight(COL_QTY)) {
+                        Text("Quantity", variant = TextVariant.Muted)
                     }
                 }
+                TableCell(modifier = Modifier.weight(COL_AMOUNT)) {
+                    Text("Amount", variant = TextVariant.Muted)
+                }
+                if (!isCompact) {
+                    TableCell(modifier = Modifier.weight(COL_DATE)) {
+                        Text("Date", variant = TextVariant.Muted)
+                    }
+                }
+            }
 
-                FakeData.transactions.take(if (isCompact) 5 else 8).forEach { transaction ->
-                    TableRow(
-                        onClick = { onTransactionClick(transaction) },
-                    ) {
-                        TableCell(modifier = Modifier.weight(COL_ASSET)) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
-                            ) {
-                                Avatar(
-                                    fallback = FakeData.stockInitials(transaction.ticker),
-                                    size = AvatarSize.Sm,
+            FakeData.transactions.take(if (isCompact) 5 else 8).forEach { transaction ->
+                TableRow(
+                    onClick = { onTransactionClick(transaction) },
+                ) {
+                    TableCell(modifier = Modifier.weight(COL_ASSET)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                        ) {
+                            Avatar(
+                                fallback = FakeData.stockInitials(transaction.ticker),
+                                size = AvatarSize.Sm,
+                            )
+                            Spacer(Modifier.width(RikkaTheme.spacing.sm))
+                            Column {
+                                Text(
+                                    text = transaction.ticker,
+                                    variant = TextVariant.P,
                                 )
-                                Spacer(Modifier.width(RikkaTheme.spacing.sm))
-                                Column {
-                                    Text(
-                                        text = transaction.ticker,
-                                        variant = TextVariant.P,
-                                    )
-                                    if (!isCompact) {
-                                        val stock =
-                                            FakeData.stocks.find { it.ticker == transaction.ticker }
-                                        if (stock != null) {
-                                            Text(
-                                                text = stock.name,
-                                                variant = TextVariant.Muted,
-                                                maxLines = 1,
-                                            )
-                                        }
+                                if (!isCompact) {
+                                    val stock =
+                                        FakeData.stocks.find { it.ticker == transaction.ticker }
+                                    if (stock != null) {
+                                        Text(
+                                            text = stock.name,
+                                            variant = TextVariant.Muted,
+                                            maxLines = 1,
+                                        )
                                     }
                                 }
                             }
                         }
-                        TableCell(modifier = Modifier.weight(COL_TYPE)) {
-                            val typeLabel = if (isCompact && transaction.type == TransactionType.Dividend) {
-                                "Div"
-                            } else {
-                                transaction.type.name
-                            }
-                            Badge(
-                                text = typeLabel,
-                                variant = when (transaction.type) {
-                                    TransactionType.Buy -> BadgeVariant.Default
-                                    TransactionType.Sell -> BadgeVariant.Destructive
-                                    TransactionType.Dividend -> BadgeVariant.Secondary
-                                },
-                            )
+                    }
+                    TableCell(modifier = Modifier.weight(COL_TYPE)) {
+                        val typeLabel = if (isCompact && transaction.type == TransactionType.Dividend) {
+                            "Div"
+                        } else {
+                            transaction.type.name
                         }
-                        if (!isCompact) {
-                            TableCell(modifier = Modifier.weight(COL_QTY)) {
-                                Text(
-                                    text = when (transaction.type) {
-                                        TransactionType.Buy -> "+${transaction.quantity}"
-                                        TransactionType.Sell -> "-${transaction.quantity}"
-                                        TransactionType.Dividend -> "\u2014"
-                                    },
-                                    variant = TextVariant.P,
-                                    maxLines = 1,
-                                )
-                            }
-                        }
-                        TableCell(modifier = Modifier.weight(COL_AMOUNT)) {
+                        Badge(
+                            text = typeLabel,
+                            variant = when (transaction.type) {
+                                TransactionType.Buy -> BadgeVariant.Default
+                                TransactionType.Sell -> BadgeVariant.Destructive
+                                TransactionType.Dividend -> BadgeVariant.Secondary
+                            },
+                        )
+                    }
+                    if (!isCompact) {
+                        TableCell(modifier = Modifier.weight(COL_QTY)) {
                             Text(
-                                text = "$${formatAmount(transaction.total)}",
+                                text = when (transaction.type) {
+                                    TransactionType.Buy -> "+${transaction.quantity}"
+                                    TransactionType.Sell -> "-${transaction.quantity}"
+                                    TransactionType.Dividend -> "\u2014"
+                                },
                                 variant = TextVariant.P,
                                 maxLines = 1,
                             )
                         }
-                        if (!isCompact) {
-                            TableCell(modifier = Modifier.weight(COL_DATE)) {
-                                Text(
-                                    text = transaction.date,
-                                    variant = TextVariant.Muted,
-                                    maxLines = 1,
-                                )
-                            }
+                    }
+                    TableCell(modifier = Modifier.weight(COL_AMOUNT)) {
+                        Text(
+                            text = "$${formatAmount(transaction.total)}",
+                            variant = TextVariant.P,
+                            maxLines = 1,
+                        )
+                    }
+                    if (!isCompact) {
+                        TableCell(modifier = Modifier.weight(COL_DATE)) {
+                            Text(
+                                text = transaction.date,
+                                variant = TextVariant.Muted,
+                                maxLines = 1,
+                            )
                         }
                     }
                 }
