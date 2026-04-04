@@ -15,16 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import zed.rainxch.rikkaui.components.ui.badge.Badge
 import zed.rainxch.rikkaui.components.ui.badge.BadgeVariant
@@ -41,8 +39,7 @@ import zed.rainxch.rikkaui.components.ui.text.TextVariant
 import zed.rainxch.rikkaui.components.ui.toast.LocalToastHostState
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
-import zed.rainxch.financerikkauiapp.data.Transaction
-import zed.rainxch.financerikkauiapp.navigation.Screen
+import zed.rainxch.financerikkauiapp.navigation.FinanceAppGraph
 import zed.rainxch.financerikkauiapp.theme.DashboardSemanticColors
 
 private val dateOptions = listOf(
@@ -55,13 +52,27 @@ private val dateOptions = listOf(
 )
 
 @Composable
+fun DashboardRoot(
+    viewModel: DashboardViewModel,
+    onNavigate: (FinanceAppGraph) -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    DashboardScreen(
+        state = state,
+        onAction = viewModel::onAction,
+        onNavigate = onNavigate,
+    )
+}
+
+@Composable
 fun DashboardScreen(
-    onNavigate: (Screen) -> Unit,
+    state: DashboardState,
+    onAction: (DashboardAction) -> Unit,
+    onNavigate: (FinanceAppGraph) -> Unit,
 ) {
     val toastHostState = LocalToastHostState.current
     val scope = rememberCoroutineScope()
-    var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
-    var selectedDateRange by remember { mutableStateOf("jun-2025") }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWideScreen = maxWidth > 800.dp
@@ -71,7 +82,7 @@ fun DashboardScreen(
             // Sidebar
             if (isWideScreen) {
                 Sidebar(
-                    currentScreen = Screen.Dashboard,
+                    currentRoute = FinanceAppGraph.Dashboard,
                     onNavigate = onNavigate,
                 )
             }
@@ -95,8 +106,8 @@ fun DashboardScreen(
                         actions = {
                             if (!isCompact) {
                                 Select(
-                                    selectedValue = selectedDateRange,
-                                    onValueChange = { selectedDateRange = it },
+                                    selectedValue = state.selectedDateRange,
+                                    onValueChange = { onAction(DashboardAction.SelectDateRange(it)) },
                                     options = dateOptions,
                                 )
                             }
@@ -134,7 +145,7 @@ fun DashboardScreen(
                         // Transactions Table
                         TransactionsTable(
                             onTransactionClick = { transaction ->
-                                selectedTransaction = transaction
+                                onAction(DashboardAction.SelectTransaction(transaction))
                             },
                             isCompact = isCompact,
                         )
@@ -147,13 +158,13 @@ fun DashboardScreen(
         }
 
         // Transaction Detail Sheet
-        selectedTransaction?.let { transaction ->
+        state.selectedTransaction?.let { transaction ->
             TransactionSheet(
                 transaction = transaction,
                 isOpen = true,
-                onDismiss = { selectedTransaction = null },
+                onDismiss = { onAction(DashboardAction.DismissTransaction) },
                 onCancelOrder = {
-                    selectedTransaction = null
+                    onAction(DashboardAction.CancelOrder)
                     scope.launch {
                         toastHostState.show("Order cancelled")
                     }
@@ -165,8 +176,8 @@ fun DashboardScreen(
 
 @Composable
 fun Sidebar(
-    currentScreen: Screen,
-    onNavigate: (Screen) -> Unit,
+    currentRoute: FinanceAppGraph,
+    onNavigate: (FinanceAppGraph) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -195,8 +206,8 @@ fun Sidebar(
             SidebarNavItem(
                 icon = RikkaIcons.Star,
                 label = "Dashboard",
-                isSelected = currentScreen == Screen.Dashboard,
-                onClick = { onNavigate(Screen.Dashboard) },
+                isSelected = currentRoute is FinanceAppGraph.Dashboard,
+                onClick = { onNavigate(FinanceAppGraph.Dashboard) },
             )
             SidebarNavItem(
                 icon = RikkaIcons.Eye,
@@ -219,8 +230,8 @@ fun Sidebar(
             SidebarNavItem(
                 icon = RikkaIcons.Settings,
                 label = "Settings",
-                isSelected = currentScreen == Screen.Settings,
-                onClick = { onNavigate(Screen.Settings) },
+                isSelected = currentRoute is FinanceAppGraph.Settings,
+                onClick = { onNavigate(FinanceAppGraph.Settings) },
             )
         }
 
