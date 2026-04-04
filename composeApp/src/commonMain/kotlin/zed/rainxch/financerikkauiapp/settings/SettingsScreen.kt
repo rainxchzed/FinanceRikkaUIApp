@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialog
 import zed.rainxch.rikkaui.components.ui.alertdialog.AlertDialogAction
@@ -47,7 +45,6 @@ import zed.rainxch.rikkaui.components.ui.toast.LocalToastHostState
 import zed.rainxch.rikkaui.components.ui.toggle.Toggle
 import zed.rainxch.rikkaui.components.ui.topappbar.TopAppBar
 import zed.rainxch.rikkaui.foundation.RikkaTheme
-import zed.rainxch.financerikkauiapp.navigation.Screen
 
 private val currencyOptions = listOf(
     SelectOption("USD", "USD"),
@@ -66,23 +63,27 @@ private val languageOptions = listOf(
 )
 
 @Composable
+fun SettingsRoot(
+    viewModel: SettingsViewModel,
+    onNavigateBack: () -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    SettingsScreen(
+        state = state,
+        onAction = viewModel::onAction,
+        onNavigateBack = onNavigateBack,
+    )
+}
+
+@Composable
 fun SettingsScreen(
-    onNavigate: (Screen) -> Unit,
+    state: SettingsState,
+    onAction: (SettingsAction) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     val toastHostState = LocalToastHostState.current
     val scope = rememberCoroutineScope()
-
-    // Form state
-    var darkMode by remember { mutableStateOf(true) }
-    var notifications by remember { mutableStateOf(true) }
-    var biometrics by remember { mutableStateOf(false) }
-    var currency by remember { mutableStateOf("USD") }
-    var language by remember { mutableStateOf("en") }
-    var displayName by remember { mutableStateOf("John Doe") }
-    var riskTolerance by remember { mutableStateOf(0.5f) }
-    var chartStyle by remember { mutableStateOf("Line") }
-    var showPortfolioInNotification by remember { mutableStateOf(true) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -92,7 +93,7 @@ fun SettingsScreen(
                     IconButton(
                         icon = RikkaIcons.ArrowLeft,
                         contentDescription = "Back",
-                        onClick = { onNavigate(Screen.Dashboard) },
+                        onClick = onNavigateBack,
                     )
                 },
             )
@@ -121,8 +122,8 @@ fun SettingsScreen(
                         ) {
                             Label(text = "Display Name")
                             Input(
-                                value = displayName,
-                                onValueChange = { displayName = it },
+                                value = state.displayName,
+                                onValueChange = { onAction(SettingsAction.SetDisplayName(it)) },
                                 placeholder = "Enter your name",
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -144,8 +145,8 @@ fun SettingsScreen(
                             SettingsToggleRow(
                                 label = "Dark Mode",
                                 description = "Use dark color scheme",
-                                checked = darkMode,
-                                onCheckedChange = { darkMode = it },
+                                checked = state.darkMode,
+                                onCheckedChange = { onAction(SettingsAction.SetDarkMode(it)) },
                             )
 
                             Separator()
@@ -153,8 +154,8 @@ fun SettingsScreen(
                             SettingsToggleRow(
                                 label = "Notifications",
                                 description = "Receive push notifications",
-                                checked = notifications,
-                                onCheckedChange = { notifications = it },
+                                checked = state.notifications,
+                                onCheckedChange = { onAction(SettingsAction.SetNotifications(it)) },
                             )
 
                             Separator()
@@ -162,8 +163,8 @@ fun SettingsScreen(
                             SettingsToggleRow(
                                 label = "Biometric Auth",
                                 description = "Use fingerprint or face ID",
-                                checked = biometrics,
-                                onCheckedChange = { biometrics = it },
+                                checked = state.biometrics,
+                                onCheckedChange = { onAction(SettingsAction.SetBiometrics(it)) },
                             )
 
                             Separator()
@@ -179,8 +180,8 @@ fun SettingsScreen(
                                     Text("Display currency", variant = TextVariant.Muted)
                                 }
                                 Select(
-                                    selectedValue = currency,
-                                    onValueChange = { currency = it },
+                                    selectedValue = state.currency,
+                                    onValueChange = { onAction(SettingsAction.SetCurrency(it)) },
                                     options = currencyOptions,
                                     modifier = Modifier.width(140.dp),
                                 )
@@ -199,8 +200,8 @@ fun SettingsScreen(
                                     Text("Interface language", variant = TextVariant.Muted)
                                 }
                                 Select(
-                                    selectedValue = language,
-                                    onValueChange = { language = it },
+                                    selectedValue = state.language,
+                                    onValueChange = { onAction(SettingsAction.SetLanguage(it)) },
                                     options = languageOptions,
                                     modifier = Modifier.width(140.dp),
                                 )
@@ -228,8 +229,8 @@ fun SettingsScreen(
                                     Text("Risk Tolerance", variant = TextVariant.P)
                                     Text(
                                         text = when {
-                                            riskTolerance < 0.33f -> "Conservative"
-                                            riskTolerance < 0.66f -> "Moderate"
+                                            state.riskTolerance < 0.33f -> "Conservative"
+                                            state.riskTolerance < 0.66f -> "Moderate"
                                             else -> "Aggressive"
                                         },
                                         variant = TextVariant.Muted,
@@ -237,8 +238,8 @@ fun SettingsScreen(
                                 }
                                 Spacer(Modifier.height(RikkaTheme.spacing.sm))
                                 Slider(
-                                    value = riskTolerance,
-                                    onValueChange = { riskTolerance = it },
+                                    value = state.riskTolerance,
+                                    onValueChange = { onAction(SettingsAction.SetRiskTolerance(it)) },
                                     modifier = Modifier.fillMaxWidth(),
                                 )
                             }
@@ -256,8 +257,8 @@ fun SettingsScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                     ) {
                                         RadioButton(
-                                            selected = chartStyle == style,
-                                            onClick = { chartStyle = style },
+                                            selected = state.chartStyle == style,
+                                            onClick = { onAction(SettingsAction.SetChartStyle(style)) },
                                         )
                                         Spacer(Modifier.width(RikkaTheme.spacing.sm))
                                         Text(style, variant = TextVariant.P)
@@ -272,8 +273,8 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Checkbox(
-                                    checked = showPortfolioInNotification,
-                                    onCheckedChange = { showPortfolioInNotification = it },
+                                    checked = state.showPortfolioInNotification,
+                                    onCheckedChange = { onAction(SettingsAction.SetShowPortfolioInNotification(it)) },
                                 )
                                 Spacer(Modifier.width(RikkaTheme.spacing.sm))
                                 Text(
@@ -293,6 +294,7 @@ fun SettingsScreen(
                     Button(
                         text = "Save Changes",
                         onClick = {
+                            onAction(SettingsAction.SaveSettings)
                             scope.launch {
                                 toastHostState.show("Settings saved successfully")
                             }
@@ -302,7 +304,7 @@ fun SettingsScreen(
 
                     Button(
                         text = "Delete Account",
-                        onClick = { showDeleteDialog = true },
+                        onClick = { onAction(SettingsAction.SetShowDeleteDialog(true)) },
                         variant = ButtonVariant.Destructive,
                     )
                 }
@@ -313,12 +315,12 @@ fun SettingsScreen(
     }
 
     // Delete Account Alert Dialog
-    if (showDeleteDialog) {
+    if (state.showDeleteDialog) {
         AlertDialog(
             open = true,
-            onDismiss = { showDeleteDialog = false },
+            onDismiss = { onAction(SettingsAction.SetShowDeleteDialog(false)) },
             onConfirm = {
-                showDeleteDialog = false
+                onAction(SettingsAction.ConfirmDeleteAccount)
                 scope.launch {
                     toastHostState.show("Account deletion requested")
                 }
@@ -331,12 +333,12 @@ fun SettingsScreen(
             AlertDialogFooter {
                 AlertDialogAction(
                     text = "Cancel",
-                    onClick = { showDeleteDialog = false },
+                    onClick = { onAction(SettingsAction.SetShowDeleteDialog(false)) },
                 )
                 AlertDialogAction(
                     text = "Delete",
                     onClick = {
-                        showDeleteDialog = false
+                        onAction(SettingsAction.ConfirmDeleteAccount)
                         scope.launch {
                             toastHostState.show("Account deletion requested")
                         }
