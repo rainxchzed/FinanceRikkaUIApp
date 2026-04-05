@@ -10,5 +10,14 @@ sealed interface FinanceAppGraph : NavKey {
     data object Dashboard : FinanceAppGraph
 
     @Serializable
+    data object Portfolio : FinanceAppGraph
+
+    @Serializable
+    data object Activity : FinanceAppGraph
+
+    @Serializable
+    data object Cards : FinanceAppGraph
+
+    @Serializable
     data object Settings : FinanceAppGraph
 }

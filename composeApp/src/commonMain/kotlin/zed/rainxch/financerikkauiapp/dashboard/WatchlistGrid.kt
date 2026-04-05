@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import zed.rainxch.rikkaui.components.ui.badge.Badge
 import zed.rainxch.rikkaui.components.ui.badge.BadgeVariant
 import zed.rainxch.rikkaui.components.ui.card.Card
-import zed.rainxch.rikkaui.components.ui.card.CardContent
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.text.TextVariant
 import zed.rainxch.rikkaui.foundation.RikkaTheme

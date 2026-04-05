@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import zed.rainxch.rikkaui.components.ui.badge.Badge
 import zed.rainxch.rikkaui.components.ui.badge.BadgeVariant
 import zed.rainxch.rikkaui.components.ui.card.Card
-import zed.rainxch.rikkaui.components.ui.card.CardContent
 import zed.rainxch.rikkaui.components.ui.icon.Icon
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.progress.Progress

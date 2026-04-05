@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,6 +35,8 @@ import zed.rainxch.rikkaui.components.ui.scrollarea.ScrollArea
 import zed.rainxch.rikkaui.components.ui.select.Select
 import zed.rainxch.rikkaui.components.ui.select.SelectOption
 import zed.rainxch.rikkaui.components.ui.separator.Separator
+import zed.rainxch.rikkaui.components.ui.sheet.Sheet
+import zed.rainxch.rikkaui.components.ui.sheet.SheetSide
 import zed.rainxch.rikkaui.components.ui.text.Text
 import zed.rainxch.rikkaui.components.ui.text.TextVariant
 import zed.rainxch.rikkaui.components.ui.toast.LocalToastHostState
@@ -97,7 +100,7 @@ fun DashboardScreen(
                                 IconButton(
                                     icon = RikkaIcons.Menu,
                                     contentDescription = "Menu",
-                                    onClick = { },
+                                    onClick = { onAction(DashboardAction.OpenDrawer) },
                                 )
                             }
                         } else {
@@ -157,6 +160,24 @@ fun DashboardScreen(
             }
         }
 
+        // Navigation Drawer (mobile) — using RikkaUI Sheet from left
+        if (!isWideScreen) {
+            Sheet(
+                open = state.isDrawerOpen,
+                onDismiss = { onAction(DashboardAction.CloseDrawer) },
+                side = SheetSide.Left,
+                panelWidth = 260.dp,
+            ) {
+                DrawerSidebar(
+                    currentRoute = FinanceAppGraph.Dashboard,
+                    onNavigate = { route ->
+                        onAction(DashboardAction.CloseDrawer)
+                        onNavigate(route)
+                    },
+                )
+            }
+        }
+
         // Transaction Detail Sheet
         state.selectedTransaction?.let { transaction ->
             TransactionSheet(
@@ -212,20 +233,20 @@ fun Sidebar(
             SidebarNavItem(
                 icon = RikkaIcons.Eye,
                 label = "Portfolio",
-                isSelected = false,
-                onClick = { },
+                isSelected = currentRoute is FinanceAppGraph.Portfolio,
+                onClick = { onNavigate(FinanceAppGraph.Portfolio) },
             )
             SidebarNavItem(
                 icon = RikkaIcons.ArrowRight,
                 label = "Activity",
-                isSelected = false,
-                onClick = { },
+                isSelected = currentRoute is FinanceAppGraph.Activity,
+                onClick = { onNavigate(FinanceAppGraph.Activity) },
             )
             SidebarNavItem(
                 icon = RikkaIcons.Copy,
                 label = "Cards",
-                isSelected = false,
-                onClick = { },
+                isSelected = currentRoute is FinanceAppGraph.Cards,
+                onClick = { onNavigate(FinanceAppGraph.Cards) },
             )
             SidebarNavItem(
                 icon = RikkaIcons.Settings,
@@ -252,6 +273,66 @@ fun Sidebar(
             )
         }
     }
+}
+
+@Composable
+private fun ColumnScope.DrawerSidebar(
+    currentRoute: FinanceAppGraph,
+    onNavigate: (FinanceAppGraph) -> Unit,
+) {
+    // Logo / Brand
+    Text(
+        text = "FinanceApp",
+        variant = TextVariant.H3,
+        color = RikkaTheme.colors.primary,
+    )
+
+    Separator(modifier = Modifier.padding(vertical = RikkaTheme.spacing.md))
+
+    // Navigation Items
+    SidebarNavItem(
+        icon = RikkaIcons.Star,
+        label = "Dashboard",
+        isSelected = currentRoute is FinanceAppGraph.Dashboard,
+        onClick = { onNavigate(FinanceAppGraph.Dashboard) },
+    )
+    SidebarNavItem(
+        icon = RikkaIcons.Eye,
+        label = "Portfolio",
+        isSelected = currentRoute is FinanceAppGraph.Portfolio,
+        onClick = { onNavigate(FinanceAppGraph.Portfolio) },
+    )
+    SidebarNavItem(
+        icon = RikkaIcons.ArrowRight,
+        label = "Activity",
+        isSelected = currentRoute is FinanceAppGraph.Activity,
+        onClick = { onNavigate(FinanceAppGraph.Activity) },
+    )
+    SidebarNavItem(
+        icon = RikkaIcons.Copy,
+        label = "Cards",
+        isSelected = currentRoute is FinanceAppGraph.Cards,
+        onClick = { onNavigate(FinanceAppGraph.Cards) },
+    )
+    SidebarNavItem(
+        icon = RikkaIcons.Settings,
+        label = "Settings",
+        isSelected = currentRoute is FinanceAppGraph.Settings,
+        onClick = { onNavigate(FinanceAppGraph.Settings) },
+    )
+
+    Spacer(Modifier.weight(1f))
+
+    Separator(modifier = Modifier.padding(vertical = RikkaTheme.spacing.md))
+    Badge(
+        text = "v0.3.0",
+        variant = BadgeVariant.Outline,
+    )
+    Spacer(Modifier.height(RikkaTheme.spacing.xs))
+    Text(
+        text = "RikkaUI",
+        variant = TextVariant.Muted,
+    )
 }
 
 @Composable

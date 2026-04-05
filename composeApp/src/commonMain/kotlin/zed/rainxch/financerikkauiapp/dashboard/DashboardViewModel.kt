@@ -10,6 +10,7 @@ import zed.rainxch.financerikkauiapp.data.Transaction
 data class DashboardState(
     val selectedTransaction: Transaction? = null,
     val selectedDateRange: String = "jun-2025",
+    val isDrawerOpen: Boolean = false,
 )
 
 sealed interface DashboardAction {
@@ -17,6 +18,8 @@ sealed interface DashboardAction {
     data object DismissTransaction : DashboardAction
     data object CancelOrder : DashboardAction
     data class SelectDateRange(val range: String) : DashboardAction
+    data object OpenDrawer : DashboardAction
+    data object CloseDrawer : DashboardAction
 }
 
 class DashboardViewModel : ViewModel() {
@@ -40,6 +43,14 @@ class DashboardViewModel : ViewModel() {
 
             is DashboardAction.SelectDateRange -> {
                 _state.update { it.copy(selectedDateRange = action.range) }
+            }
+
+            DashboardAction.OpenDrawer -> {
+                _state.update { it.copy(isDrawerOpen = true) }
+            }
+
+            DashboardAction.CloseDrawer -> {
+                _state.update { it.copy(isDrawerOpen = false) }
             }
         }
     }

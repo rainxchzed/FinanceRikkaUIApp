@@ -26,8 +26,6 @@ import zed.rainxch.rikkaui.components.ui.button.Button
 import zed.rainxch.rikkaui.components.ui.button.ButtonVariant
 import zed.rainxch.rikkaui.components.ui.button.IconButton
 import zed.rainxch.rikkaui.components.ui.card.Card
-import zed.rainxch.rikkaui.components.ui.card.CardContent
-import zed.rainxch.rikkaui.components.ui.card.CardHeader
 import zed.rainxch.rikkaui.components.ui.checkbox.Checkbox
 import zed.rainxch.rikkaui.components.ui.icon.RikkaIcons
 import zed.rainxch.rikkaui.components.ui.input.Input
@@ -112,177 +110,145 @@ fun SettingsScreen(
             ) {
                 // Profile Section
                 Card {
-                    CardHeader {
-                        Text("Profile", variant = TextVariant.H4)
-                    }
-                    CardContent {
-                        Column(
-                            modifier = Modifier.padding(RikkaTheme.spacing.md),
-                            verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.md),
-                        ) {
-                            Label(text = "Display Name")
-                            Input(
-                                value = state.displayName,
-                                onValueChange = { onAction(SettingsAction.SetDisplayName(it)) },
-                                placeholder = "Enter your name",
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
-                    }
+                    Text("Profile", variant = TextVariant.H4)
+                    Label(text = "Display Name")
+                    Input(
+                        value = state.displayName,
+                        onValueChange = { onAction(SettingsAction.SetDisplayName(it)) },
+                        placeholder = "Enter your name",
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
 
                 // Preferences Section
                 Card {
-                    CardHeader {
-                        Text("Preferences", variant = TextVariant.H4)
-                    }
-                    CardContent {
-                        Column(
-                            modifier = Modifier.padding(RikkaTheme.spacing.md),
-                            verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg),
-                        ) {
-                            // Toggles
-                            SettingsToggleRow(
-                                label = "Dark Mode",
-                                description = "Use dark color scheme",
-                                checked = state.darkMode,
-                                onCheckedChange = { onAction(SettingsAction.SetDarkMode(it)) },
-                            )
+                    Text("Preferences", variant = TextVariant.H4)
 
-                            Separator()
+                    // Toggles
+                    SettingsToggleRow(
+                        label = "Dark Mode",
+                        description = "Use dark color scheme",
+                        checked = state.darkMode,
+                        onCheckedChange = { onAction(SettingsAction.SetDarkMode(it)) },
+                    )
 
-                            SettingsToggleRow(
-                                label = "Notifications",
-                                description = "Receive push notifications",
-                                checked = state.notifications,
-                                onCheckedChange = { onAction(SettingsAction.SetNotifications(it)) },
-                            )
+                    Separator()
 
-                            Separator()
+                    SettingsToggleRow(
+                        label = "Notifications",
+                        description = "Receive push notifications",
+                        checked = state.notifications,
+                        onCheckedChange = { onAction(SettingsAction.SetNotifications(it)) },
+                    )
 
-                            SettingsToggleRow(
-                                label = "Biometric Auth",
-                                description = "Use fingerprint or face ID",
-                                checked = state.biometrics,
-                                onCheckedChange = { onAction(SettingsAction.SetBiometrics(it)) },
-                            )
+                    Separator()
 
-                            Separator()
+                    SettingsToggleRow(
+                        label = "Biometric Auth",
+                        description = "Use fingerprint or face ID",
+                        checked = state.biometrics,
+                        onCheckedChange = { onAction(SettingsAction.SetBiometrics(it)) },
+                    )
 
-                            // Currency Select
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column {
-                                    Text("Currency", variant = TextVariant.P)
-                                    Text("Display currency", variant = TextVariant.Muted)
-                                }
-                                Select(
-                                    selectedValue = state.currency,
-                                    onValueChange = { onAction(SettingsAction.SetCurrency(it)) },
-                                    options = currencyOptions,
-                                    modifier = Modifier.width(140.dp),
-                                )
-                            }
+                    Separator()
 
-                            Separator()
-
-                            // Language Select
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column {
-                                    Text("Language", variant = TextVariant.P)
-                                    Text("Interface language", variant = TextVariant.Muted)
-                                }
-                                Select(
-                                    selectedValue = state.language,
-                                    onValueChange = { onAction(SettingsAction.SetLanguage(it)) },
-                                    options = languageOptions,
-                                    modifier = Modifier.width(140.dp),
-                                )
-                            }
+                    // Currency Select
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column {
+                            Text("Currency", variant = TextVariant.P)
+                            Text("Display currency", variant = TextVariant.Muted)
                         }
+                        Select(
+                            selectedValue = state.currency,
+                            onValueChange = { onAction(SettingsAction.SetCurrency(it)) },
+                            options = currencyOptions,
+                            modifier = Modifier.width(140.dp),
+                        )
+                    }
+
+                    Separator()
+
+                    // Language Select
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column {
+                            Text("Language", variant = TextVariant.P)
+                            Text("Interface language", variant = TextVariant.Muted)
+                        }
+                        Select(
+                            selectedValue = state.language,
+                            onValueChange = { onAction(SettingsAction.SetLanguage(it)) },
+                            options = languageOptions,
+                            modifier = Modifier.width(140.dp),
+                        )
                     }
                 }
 
                 // Chart & Display Section
                 Card {
-                    CardHeader {
-                        Text("Chart & Display", variant = TextVariant.H4)
+                    Text("Chart & Display", variant = TextVariant.H4)
+
+                    // Risk Tolerance Slider
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text("Risk Tolerance", variant = TextVariant.P)
+                        Text(
+                            text = when {
+                                state.riskTolerance < 0.33f -> "Conservative"
+                                state.riskTolerance < 0.66f -> "Moderate"
+                                else -> "Aggressive"
+                            },
+                            variant = TextVariant.Muted,
+                        )
                     }
-                    CardContent {
-                        Column(
-                            modifier = Modifier.padding(RikkaTheme.spacing.md),
-                            verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.lg),
+                    Slider(
+                        value = state.riskTolerance,
+                        onValueChange = { onAction(SettingsAction.SetRiskTolerance(it)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    Separator()
+
+                    // Chart Style Radio Group
+                    Text("Chart Style", variant = TextVariant.P)
+                    listOf("Line", "Candle", "Bar").forEach { style ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
-                            // Risk Tolerance Slider
-                            Column {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    Text("Risk Tolerance", variant = TextVariant.P)
-                                    Text(
-                                        text = when {
-                                            state.riskTolerance < 0.33f -> "Conservative"
-                                            state.riskTolerance < 0.66f -> "Moderate"
-                                            else -> "Aggressive"
-                                        },
-                                        variant = TextVariant.Muted,
-                                    )
-                                }
-                                Spacer(Modifier.height(RikkaTheme.spacing.sm))
-                                Slider(
-                                    value = state.riskTolerance,
-                                    onValueChange = { onAction(SettingsAction.SetRiskTolerance(it)) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                )
-                            }
-
-                            Separator()
-
-                            // Chart Style Radio Group
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(RikkaTheme.spacing.sm),
-                            ) {
-                                Text("Chart Style", variant = TextVariant.P)
-                                listOf("Line", "Candle", "Bar").forEach { style ->
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth(),
-                                    ) {
-                                        RadioButton(
-                                            selected = state.chartStyle == style,
-                                            onClick = { onAction(SettingsAction.SetChartStyle(style)) },
-                                        )
-                                        Spacer(Modifier.width(RikkaTheme.spacing.sm))
-                                        Text(style, variant = TextVariant.P)
-                                    }
-                                }
-                            }
-
-                            Separator()
-
-                            // Checkbox
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Checkbox(
-                                    checked = state.showPortfolioInNotification,
-                                    onCheckedChange = { onAction(SettingsAction.SetShowPortfolioInNotification(it)) },
-                                )
-                                Spacer(Modifier.width(RikkaTheme.spacing.sm))
-                                Text(
-                                    "Show portfolio in notification bar",
-                                    variant = TextVariant.P,
-                                )
-                            }
+                            RadioButton(
+                                selected = state.chartStyle == style,
+                                onClick = { onAction(SettingsAction.SetChartStyle(style)) },
+                            )
+                            Spacer(Modifier.width(RikkaTheme.spacing.sm))
+                            Text(style, variant = TextVariant.P)
                         }
+                    }
+
+                    Separator()
+
+                    // Checkbox
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = state.showPortfolioInNotification,
+                            onCheckedChange = { onAction(SettingsAction.SetShowPortfolioInNotification(it)) },
+                        )
+                        Spacer(Modifier.width(RikkaTheme.spacing.sm))
+                        Text(
+                            "Show portfolio in notification bar",
+                            variant = TextVariant.P,
+                        )
                     }
                 }
 

@@ -15,6 +15,7 @@ import zed.rainxch.financerikkauiapp.dashboard.DashboardRoot
 import zed.rainxch.financerikkauiapp.dashboard.DashboardViewModel
 import zed.rainxch.financerikkauiapp.settings.SettingsRoot
 import zed.rainxch.financerikkauiapp.settings.SettingsViewModel
+import zed.rainxch.financerikkauiapp.stub.StubScreen
 
 @Composable
 fun AppNavigation() {
@@ -25,6 +26,18 @@ fun AppNavigation() {
                     subclass(
                         FinanceAppGraph.Dashboard::class,
                         FinanceAppGraph.Dashboard.serializer(),
+                    )
+                    subclass(
+                        FinanceAppGraph.Portfolio::class,
+                        FinanceAppGraph.Portfolio.serializer(),
+                    )
+                    subclass(
+                        FinanceAppGraph.Activity::class,
+                        FinanceAppGraph.Activity.serializer(),
+                    )
+                    subclass(
+                        FinanceAppGraph.Cards::class,
+                        FinanceAppGraph.Cards.serializer(),
                     )
                     subclass(
                         FinanceAppGraph.Settings::class,
@@ -53,6 +66,27 @@ fun AppNavigation() {
                     onNavigate = { route ->
                         navStack.add(route)
                     },
+                )
+            }
+
+            entry<FinanceAppGraph.Portfolio> {
+                StubScreen(
+                    title = "Portfolio",
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                )
+            }
+
+            entry<FinanceAppGraph.Activity> {
+                StubScreen(
+                    title = "Activity",
+                    onNavigateBack = { navStack.removeLastOrNull() },
+                )
+            }
+
+            entry<FinanceAppGraph.Cards> {
+                StubScreen(
+                    title = "Cards",
+                    onNavigateBack = { navStack.removeLastOrNull() },
                 )
             }
 
